@@ -41,7 +41,7 @@ ax[0].legend()
 
 ax[1].stem(t, tilt)
 ax[1].set_xlabel('Time')
-ax[1].set_ylabel('Tilt')
+ax[1].set_ylabel('Horizontally with > 5cm')
 
 plt.show()
 s.close()
