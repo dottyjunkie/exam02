@@ -34,8 +34,8 @@ InterruptIn sw(SW2);
 EventQueue queue;
 
 float buffer[3][101];
-int tiltbuf[101];
-int istilt = 0;
+int over5buf[101];
+int isover5 = 0;
 
 void FXOS8700CQ_readRegs(int addr, uint8_t *data, int len);
 void FXOS8700CQ_writeRegs(uint8_t *data, int len);
@@ -58,13 +58,13 @@ int main() {
 
 	while(true) {
 		if(!sw) {
-			istilt = 0;
+			isover5 = 0;
 
 			queue.dispatch(9999);
 
 			redLED = 1;
 			for(int i = 0; i < 101; i++) {
-				pc.printf("%1.4f,%1.4f,%1.4f,%d\r\n", buffer[0][i], buffer[1][i], buffer[2][i], tiltbuf[i]);
+				pc.printf("%1.4f,%1.4f,%1.4f,%d\r\n", buffer[0][i], buffer[1][i], buffer[2][i], over5buf[i]);
 			}
 		}
 
@@ -97,15 +97,19 @@ void logger() {
 	reader();
 	
 	for(int i = 0; i < 3; i++)
-		buffer[i][istilt] = t[i];
-	
-	if(abs(t[0]) > 0.5 || abs(t[1]) > 0.5) {
-		tiltbuf[istilt] = 1;
-	} else {
-		tiltbuf[istilt] = 0;
-	}
+		buffer[i][isover5] = t[i];
 
-		istilt++;
+   ///////////////////////////////////////////////
+	// here is calaulate if its over 5
+   
+
+	if( t[2]*9.8*0.01/2 > 5) {
+		over5buf[isover5] = 1;
+	} else {
+		over5buf[isover5] = 0;
+	}
+   ///////////////////////////////////////
+		isover5++;
 }
 
 void FXOS8700CQ_readRegs(int addr, uint8_t *data, int len) {
